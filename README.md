@@ -8,27 +8,31 @@ first line as a title. It then creates a gist with that
 content, and toots about it. For example:
 
 ```sh
-$ ./gistodon.sh << TOOTIT
-A long rant about lorem ipsum
+$ ./gistodon.sh -t "Example Trumpinator speech" << TOOTIT
 
-As @thedod@social.weho.st et al have pointed out in several occasions, [Lorem Ipsum](http://lipsum.com/) be like:
+Here's an example output of [Trumpinator](https://gist.github.com/thedod/09918d32c8ce557d9f024d3d61fd17ca):
 
 <blockquote>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse dignissim et nisl id tristique. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at nisi egestas, interdum nunc a, rutrum urna. Phasellus ultrices ligula sed pellentesque consectetur. Sed quis ligula tristique, laoreet lectus a, efficitur sem. Vivamus non leo vel eros vestibulum pellentesque. Donec sit amet sagittis purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+We, the citizens of our military and law enforcement and, most importantly, we are looking only to the future. We assembled here today are issuing a new vision will govern our land. From this day forward, a new decree to be America First. Every decision on trade, on taxes, on immigration, on foreign affairs, will be protected by the same night sky, they fill their heart with the nations of the world has never seen before.
 </blockquote>
 
-It makes no *sense*!!!!!**1**.
+This script [runs](https://social.weho.st/@thedod/852901) on @thedod@social.weho.st's router.
 TOOTIT
 ```
 
 This would create a gist like
-[this one](https://gist.github.com/anonymous/bd80d04c43923fbeb9f4119f2b4bba69#file-toot-md),
-and a [toot](https://social.weho.st/@thedod/913373) about it.
-Note the the `@thedod@social.weho.st` mention becomes a link in the gist,
-and appears in the toot (to make it a mastodon mention as well).
+[this one](https://gist.github.com/anonymous/50e2505c8839773cb2d8db56db15f848#file-toot-md),
+and a [toot](https://social.weho.st/@thedod/915713) about it.
+
+Note:
+
+*  The `@thedod@social.weho.st` mention becomes a link in the gist,
+   and appears in the toot (to make it a mastodon mention as well).
+*  The `-t` (`--title`) argument is optional.
+   If you skip it, there's now content warning (cw).
 
 Of course, using and editor and then doing something like
-`./gistodon.sh < /tmp/rant.md` is probably a more practical way of doing this.
+`./gistodon.sh [-t "some title"] < /tmp/somepost.md` is probably a more practical way of doing this.
 
 #### Installing
 
