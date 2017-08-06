@@ -29,7 +29,7 @@ Note:
 *  The `@thedod@social.weho.st` mention becomes a link in the gist,
    and appears in the toot (to make it a mastodon mention as well).
 *  The `-t` (`--title`) argument is optional.
-   If you skip it, there's now content warning (cw).
+   If you skip it, the toot has no content warning (cw).
 
 Of course, using and editor and then doing something like
 `./gistodon.sh [-t "some title"] < /tmp/somepost.md` is probably a more practical way of doing this.
