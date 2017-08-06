@@ -11,8 +11,7 @@ content, and toots about it. For example:
 $ ./gistodon.sh << TOOTIT
 A long rant about lorem ipsum
 
-As @thedod@social.weho.st et al have pointed out in several occasions,
-[Lorem Ipsum] be like:
+As @thedod@social.weho.st et al have pointed out in several occasions, [Lorem Ipsum](http://lipsum.com/) be like:
 
 <blockquote>
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse dignissim et nisl id tristique. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque at nisi egestas, interdum nunc a, rutrum urna. Phasellus ultrices ligula sed pellentesque consectetur. Sed quis ligula tristique, laoreet lectus a, efficitur sem. Vivamus non leo vel eros vestibulum pellentesque. Donec sit amet sagittis purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
@@ -22,12 +21,14 @@ It makes no *sense*!!!!!**1**.
 TOOTIT
 ```
 
-This would create a gist like [this one](https://gist.github.com/anonymous/1f9c26adb06d0f2d1a575ad174fddd27), and a [toot](https://social.weho.st/@thedod/913033) about it.
+This would create a gist like
+[this one](https://gist.github.com/anonymous/bd80d04c43923fbeb9f4119f2b4bba69#file-toot-md),
+and a [toot](https://social.weho.st/@thedod/913373) about it.
 Note the the `@thedod@social.weho.st` mention becomes a link in the gist,
 and appears in the toot (to make it a mastodon mention as well).
 
 Of course, using and editor and then doing something like
-`./gistodon.sh < /tmp/rant.md` is a more practical way of doing this.
+`./gistodon.sh < /tmp/rant.md` is probably a more practical way of doing this.
 
 #### Installing
 
