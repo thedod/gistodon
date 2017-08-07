@@ -1,10 +1,25 @@
 ### Gistodon: "toot longer" desktop app for Mastodon
 
 500 characters is a lot more than 140, but not by *much*.
-It's also unformatted text.
+It's also unformatted text. Gistodon lets you create a [gist](https://gist.github.com) and toot a summary and a link to it.
 
-Gistodon reads from markdown text from stdin and treats
-first line as a title. It then creates a gist with that
+**Note:** you need to [setup](#installing) gistodon before you can use it.
+
+#### Using the web interface
+
+The simplest way to use Gistodon is by running `gistodon -w` and browsing to `http://localhost:8008`, where you'll see something like:
+
+![Gistodon's web inteface](https://lut.im/liRXdYXMHt/mg7YtPo6jbjAkxEK)
+
+Thanks to the [simplemde](https://simplemde.com/) team for their
+[cool](https://lut.im/2ppHMpLQGY/TjCqKSnE0AMDR9eh)
+client-side markdown editor.
+
+
+
+#### Tooting from the command line
+
+Gistodon reads markdown text from stdin, creates a gist with that
 content, and toots about it. For example:
 
 ```sh
@@ -31,8 +46,7 @@ Note:
 *  The `-t` (`--title`) argument is optional.
    If you skip it, the toot has no content warning (cw).
 
-Of course, using and editor and then doing something like
-`./gistodon.sh [-t "some title"] < /tmp/somepost.md` is probably a more practical way of doing this.
+Of course, `./gistodon.sh -t "Not for the meek" < /tmp/somepost.md` or `myscript | /path/to/gistodon.sh` are probably more practical ways of doing this.
 
 #### Installing
 

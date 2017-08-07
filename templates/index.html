@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="UTF-8">
+<title>{{ account.display_name }} &mdash; Gistodon</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="css/normalize.css" media="screen">
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="css/stylesheet.css" media="screen">
+<link rel="stylesheet" type="text/css" href="css/github-light.css" media="screen">
+<style>
+  input { font-size: 2em; width:100%; margin-bottom: 8px }
+  .header img { border-radius: 50% }
+  .header a:hover { color: black; text-decoration: none }
+</style>
+</head>
+<body>
+<section class="header">
+  <h1 align="center">
+    <a target="_blank" title="{{ account.display_name }}"
+       href="{{ account.url }}">
+      <img alt="{{ account.display_name }}"
+           src="{{ account.avatar }}"/>
+    </a>
+    Gistodon: toot longer
+      <small>(as
+        <a target="_blank" title="{{ account.display_name }}"
+           href="{{ account.url }}">{{ account.display_name }}</a>)
+      </small>
+  </h1>
+</section>
+<section class="main-content">
+<form method="POST" action="toot" target="_blank">
+<input id="title" name="title" placeholder="Optional title/CW"/>
+<textarea id="markdown" name="markdown" placeholder="Write something..."></textarea>
+<input type="submit" value="Toot it"/>
+</form>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+<link rel="stylesheet" href="css/simplemde.min.css">
+<script src="js/simplemde.min.js"></script>
+<script>
+	new SimpleMDE({
+		element: document.getElementById("markdown"),
+		spellChecker: false,
+	});
+</script>
+</body>
+</html>

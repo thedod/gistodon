@@ -8,6 +8,7 @@ def create_app(instance, app_name, to_file):
         app_name,
         api_base_url = 'https://'+instance,
         to_file = to_file)
+    os.chmod(to_file, 0600)
 
 def sign_up(instance, client_cred, email, password, to_file):
     masto = Mastodon(
@@ -15,6 +16,7 @@ def sign_up(instance, client_cred, email, password, to_file):
         api_base_url = 'https://'+instance)
     masto.log_in(email, password, scopes = ['read', 'write'],
         to_file = to_file)
+    os.chmod(to_file, 0600)
     return masto
 
 def sign_in(instance, client_cred, user_cred):
@@ -40,7 +42,6 @@ if __name__=='__main__':
         print "Creating the {} app at {}...".format(
             args.app_name, args.instance)
         create_app(args.instance, args.app_name, client_cred_filename)
-        os.chmod(client_cred_filename, 0600)
         print "created {}.".format(client_cred_filename)
         when = "now"
     masto = None
