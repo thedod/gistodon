@@ -8,7 +8,7 @@ from markdown import markdown
 from html_text import extract_text
 from flask import Flask, render_template, request, redirect, jsonify
 
-DEBUG = True
+DEBUG = False # If it ain't broke, don't debug it.
 
 RE_MENTION = re.compile(r'@(\w+)@([\w.]+)')
 
@@ -78,12 +78,12 @@ def webserver(masto, account):
         return jsonify(
             # This trick makes sure local accounts also get @hostname suffix
             ['@{}@{}'.format(a["username"], urlparse.urlsplit(a["url"]).netloc)
-                for a in res.get('accounts',[])]+\
-            ['#'+a for a in res.get('hashtags',[])])
+                for a in res.get('accounts',[])])
+            # At the moment we ignore hashtags (TODO: linkify etc.)
+            # +['#'+a for a in res.get('hashtags',[])])
 
-        return redirect(post(
-            masto, request.form['markdown'], request.form['title']))
     app.run(host='localhost', port=8008, debug=DEBUG)
+
 
 def main():
     parser = argparse.ArgumentParser(
