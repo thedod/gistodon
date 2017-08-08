@@ -1,13 +1,14 @@
 import os, sys, re, argparse, time, json
 import requests
 from glob import glob
+from urllib2 import urlparse
 from getpass import getpass
 from mastodon import Mastodon
 from markdown import markdown
 from html_text import extract_text
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
 
-DEBUG = False
+DEBUG = True
 
 RE_MENTION = re.compile(r'@(\w+)@([\w.]+)')
 
@@ -68,6 +69,20 @@ def webserver(masto, account):
         return redirect(post(
             masto, request.form['markdown'], request.form['title']))
 
+    @app.route('/search', methods=['GET', 'POST'])
+    def search():
+        q = request.form.get('q', request.args.get('q'))
+        if not q:
+            return jsonify([])
+        res = masto.search(q, True)
+        return jsonify(
+            # This trick makes sure local accounts also get @hostname suffix
+            ['@{}@{}'.format(a["username"], urlparse.urlsplit(a["url"]).netloc)
+                for a in res.get('accounts',[])]+\
+            ['#'+a for a in res.get('hashtags',[])])
+
+        return redirect(post(
+            masto, request.form['markdown'], request.form['title']))
     app.run(host='localhost', port=8008, debug=DEBUG)
 
 def main():

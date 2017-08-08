@@ -5,19 +5,24 @@
 <title>{{ account.display_name }} &mdash; Gistodon</title>
 <link rel="icon" href="graphics/gistodon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" type="text/css" href="css/normalize.css" media="screen">
+<link rel="stylesheet" type="text/css" href="css/normalize.css">
 <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" type="text/css" href="css/stylesheet.css" media="screen">
-<link rel="stylesheet" type="text/css" href="css/github-light.css" media="screen">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+<link rel="stylesheet" href="css/stylesheet.css">
+<link rel="stylesheet" href="css/github-light.css">
+<link rel="stylesheet" href="css/jquery.autocomplete.css">
+<link rel="stylesheet" href="css/simplemde.min.css">
 <style>
-  input { font-size: 2em; width:100%; margin-bottom: 8px }
+  .header { text-align: center }
   .header img { border-radius: 50%; max-height: 120px }
   .header a:hover { color: black; text-decoration: none }
+  .header input { width:33%; border: solid #ddd 1px; margin-bottom: 4px }
+  .main-content input { font-size: 2em; width:100%; margin-bottom: 8px }
 </style>
 </head>
 <body>
 <section class="header">
-  <h1 align="center">
+  <h1>
     <a target="_blank" title="Gistodon"
        href="https://github.com/thedod/gistodon#readme">
       <img alt="Gistodon" src="graphics/gistodon.png"/>
@@ -32,6 +37,12 @@
       <img alt="{{ account.display_name }}" src="{{ account.avatar }}"/>
     </a>
   </h1>
+  <input id="autocomplete" placeholder="autocomplete users/tags">
+  <button id="copy-button" data-clipboard-target="#autocomplete"
+          data-clipboard-action="cut">
+    <i class="fa fa-scissors" aria-hidden="true"></i>
+  </button>
+
 </section>
 <section class="main-content">
 <form method="POST" action="toot" target="_blank">
@@ -39,14 +50,21 @@
 <textarea id="markdown" name="markdown" placeholder="Write something..."></textarea>
 <input type="submit" value="Toot it"/>
 </form>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
-<link rel="stylesheet" href="css/simplemde.min.css">
 <script src="js/simplemde.min.js"></script>
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.autocomplete.js"></script>
+<script src="js/clipboard.min.js"></script>
 <script>
-	new SimpleMDE({
-		element: document.getElementById("markdown"),
-		spellChecker: false,
-	});
+$(function() {
+  new SimpleMDE({
+    element: document.getElementById("markdown"),
+    spellChecker: false,
+  });
+  new Clipboard("#copy-button");
+  $("#autocomplete").autocomplete({
+   source:[ { type: "remote", url: "search?q=%QUERY%" } ]
+  });
+});
 </script>
 </body>
 </html>
