@@ -41,8 +41,12 @@ def make_gist(title, body):
         }
     ).json()['html_url']+"#file-toot-md"
 
-def post(masto, body, title=None):
+def post(masto, body, title=None, direction='ltr'):
     summary = extract_text(markdown(body.strip()[:140]))
+    if direction=='rtl':
+        body = u"""<div dir="rtl">
+{}
+</div>""".format(markdown(body))
     gist = make_gist(
         title or u"A gistodon toot, {} GMT".format(
             time.asctime(time.gmtime())),
@@ -53,6 +57,7 @@ def post(masto, body, title=None):
     mentions = get_mentions(body, ignore=summary)
     if mentions:
         status += u'\n'+u' '.join(mentions)
+    return status
     return masto.status_post(status, spoiler_text=title)['url']
 
 def webserver(masto, account):
@@ -67,7 +72,8 @@ def webserver(masto, account):
         if not request.form['markdown'].strip():
             return "Nothing to toot"
         return redirect(post(
-            masto, request.form['markdown'], request.form['title']))
+            masto, request.form['markdown'],
+            request.form['title'], request.form['direction']))
 
     @app.route('/search', methods=['GET', 'POST'])
     def search():

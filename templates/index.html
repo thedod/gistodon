@@ -38,14 +38,14 @@
     </a>
   </h1>
   <input id="autocomplete" placeholder="autocomplete mentions">
-  <button id="copy-button" data-clipboard-target="#autocomplete"
-          data-clipboard-action="cut">
-    <i class="fa fa-scissors" aria-hidden="true"></i>
+  <button id="copy-button">
+    <i class="fa fa-hand-o-down" aria-hidden="true"></i>
   </button>
 
 </section>
 <section class="main-content">
 <form method="POST" action="toot" target="_blank">
+<input type="hidden" id="direction" name="direction" value="ltr"/>
 <input id="title" name="title" placeholder="Optional title/CW"/>
 <textarea id="markdown" name="markdown" placeholder="Write something..."></textarea>
 <input type="submit" value="Toot it"/>
@@ -53,17 +53,55 @@
 <script src="js/simplemde.min.js"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/jquery.autocomplete.js"></script>
-<script src="js/clipboard.min.js"></script>
 <script>
 $(function() {
-  new SimpleMDE({
+  $('#direction').val('ltr'); // to avoid incosistency when reloading rtl
+  function toggleDirection() {
+    var dir = $('#direction').val()=='ltr'? 'rtl': 'ltr';
+    $('#direction').val(dir);
+    window.editor.codemirror.setOption("direction", dir);
+    $('.main-content').css("direction", dir);
+  }
+  window.editor = new SimpleMDE({
     element: document.getElementById("markdown"),
     spellChecker: false,
+    rtlMoveVisually: false,
+    toolbar: [
+        "bold",
+        "italic",
+        "heading",
+        "|",
+        "quote",
+        "unordered-list",
+        "ordered-list",
+        "|",
+        "link",
+        "image",
+        "|",
+        "preview",
+        "side-by-side",
+        "fullscreen",
+        "|",
+        {
+            "action": toggleDirection,
+            "className": "fa fa-exchange",
+            "default": true,
+            "name": "direction",
+            "title": "Switch direction (LTR/RTL)"
+        },
+        "|",
+        "guide",
+        "|"
+    ]
   });
-  new Clipboard("#copy-button");
   $("#autocomplete").autocomplete({
    source:[ { type: "remote", url: "search?q=%QUERY%" } ]
   });
+  $('#copy-button').click(function() {
+    window.editor.codemirror.replaceSelection($('#autocomplete').val());
+    $('#autocomplete').val('');
+    return true; // voodoo
+  }); 
 });
 </script>
 </body>
