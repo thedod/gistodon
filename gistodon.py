@@ -44,6 +44,7 @@ def make_gist(title, body):
 
 def post(masto, body, title=None, direction='ltr'):
     summary = extract_text(markdown(body.strip()[:140]))
+    mentions = get_mentions(body, ignore=summary)
     body = linkify_mentions(body)
     if direction=='rtl':
         body = u"""<div dir="rtl">
@@ -58,7 +59,6 @@ def post(masto, body, title=None, direction='ltr'):
     if NO_TOOTING:
         return gist
     status = u'{}... {}'.format(summary, gist)
-    mentions = get_mentions(body, ignore=summary)
     if mentions:
         status += u'\n'+u' '.join(mentions)
     return masto.status_post(status, spoiler_text=title)['url']
