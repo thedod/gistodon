@@ -1,4 +1,4 @@
-import os, sys, re, argparse, time, json
+import os, sys, re, argparse, time, json, logging
 import requests
 from glob import glob
 from urllib2 import urlparse
@@ -11,12 +11,27 @@ from flask import Flask, render_template, request, redirect, jsonify
 DEBUG = False       # If it ain't broke, don't debug it.
 NO_TOOTING = False  # Handy during debug: create gist, but don't toot.
 
-RE_MENTION = re.compile(u'@(\\w+)@([\\w.]+)')
+RE_HASHTAG = re.compile(u'(?:^|(?<=\s))#(\\w+)')
+RE_MENTION = re.compile(u'(?:^|(?<=\s))@(\\w+)@([\\w.]+)')
+
+def get_hashtags(s, ignore=None):
+    tags = set(
+        ['#'+tag.lower() for tag in RE_HASHTAG.findall(s)])
+    if ignore:
+        tags -= get_hashtags(ignore)
+    return tags
+
+def linkify_hashtags(s, instance):
+    return RE_HASHTAG.sub(
+        lambda m:
+            u"[#{tag}](https://{instance}/tags/{tag})".format(
+                tag=m.group(1), instance=instance),
+        s)
 
 def get_mentions(s, ignore=None):
-    mentions = set([
-        "@{}@{}".format(user,instance)
-        for user, instance in RE_MENTION.findall(s)])
+    mentions = set(
+        [u"@{}@{}".format(user,instance)
+         for user, instance in RE_MENTION.findall(s)])
     if ignore:
         mentions -= get_mentions(ignore)
     return mentions
@@ -42,10 +57,11 @@ def make_gist(title, body):
         }
     ).json()['html_url']+"#file-toot-md"
 
-def post(masto, body, title=None, direction='ltr'):
+def post(masto, body, instance, title=None, direction='ltr'):
     summary = extract_text(markdown(body.strip()[:140]))
+    hashtags = get_hashtags(body, ignore=summary)
     mentions = get_mentions(body, ignore=summary)
-    body = linkify_mentions(body)
+    body = linkify_hashtags(linkify_mentions(body), instance)
     if direction=='rtl':
         body = u"""<div dir="rtl">
 {}
@@ -59,11 +75,11 @@ def post(masto, body, title=None, direction='ltr'):
     if NO_TOOTING:
         return gist
     status = u'{}... {}'.format(summary, gist)
-    if mentions:
-        status += u'\n'+u' '.join(mentions)
+    if hashtags or mentions:
+        status += u'\n'+u' '.join(hashtags.union(mentions))
     return masto.status_post(status, spoiler_text=title)['url']
 
-def webserver(masto, account):
+def webserver(masto, instance, account):
     app = Flask(__name__, static_url_path='')
  
     @app.route('/')
@@ -75,7 +91,7 @@ def webserver(masto, account):
         if not request.form['markdown'].strip():
             return "Nothing to toot"
         return redirect(post(
-            masto, request.form['markdown'],
+            masto, request.form['markdown'], instance,
             request.form['title'], request.form['direction']))
 
     @app.route('/search', methods=['GET', 'POST'])
@@ -85,16 +101,18 @@ def webserver(masto, account):
             return jsonify([])
         res = masto.search(q, True)
         return jsonify(
-            # This trick makes sure local accounts also get @hostname suffix
+            # This trick makes sure local accounts also get a @hostname suffix
             ['@{}@{}'.format(a["username"], urlparse.urlsplit(a["url"]).netloc)
-                for a in res.get('accounts',[])])
-            # At the moment we ignore hashtags (TODO: linkify etc.)
-            # +['#'+a for a in res.get('hashtags',[])])
+                for a in res.get('accounts',[])]+ \
+            ['#'+a for a in res.get('hashtags',[])])
 
     app.run(host='localhost', port=8008, debug=DEBUG)
 
 
 def main():
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
     parser = argparse.ArgumentParser(
         description="Toot stdin as a gist [markdown is supported].")
     parser.add_argument('--web', '-w', action="store_true",
@@ -131,6 +149,7 @@ def main():
         os.path.exists(client_cred_filename) and \
             os.path.exists(user_cred_filename), \
         "App/user not registered. Please run register.sh"
+    logging.info("Connecting to {}...".format(instance))
     masto = Mastodon(
         client_id = client_cred_filename,
         access_token = user_cred_filename,
@@ -138,14 +157,15 @@ def main():
 
     if args.web:
         account = masto.account_verify_credentials()
-        webserver(masto, account)
+        webserver(masto, instance, account)
     else:
+        logging.info("Reading markdown from standard input...")
         lines = sys.stdin.readlines()
         assert len(filter(lambda l: l.strip(), lines)), \
             "Empty toot."
         body = '\n'.join(lines)
         assert not args.title or len(args.title)<=80, "Title exceeds 80 characters"
-        print post(masto, body, title)
+        logging.info(post(masto, body, title))
 
 
 if __name__=='__main__':
