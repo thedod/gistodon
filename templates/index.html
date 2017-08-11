@@ -16,7 +16,7 @@
   .header { text-align: center }
   .header img { border-radius: 50%; max-height: 120px }
   .header a:hover { color: black; text-decoration: none }
-  .header input { width:33%; border: solid #ddd 1px; margin-bottom: 4px }
+  .header input { width:50%; border: solid #ddd 1px; margin-bottom: 4px }
   .main-content input { font-size: 2em; width:100%; margin-bottom: 8px }
 </style>
 </head>
@@ -94,8 +94,14 @@ $(function() {
         "|"
     ]
   });
-  $("#autocomplete").autocomplete({
-   source:[ { type: "remote", url: "search?q=%QUERY%" } ]
+  $("#autocomplete").val('').autocomplete({
+    source:[ { type: "remote", url: "search?q=%QUERY%" } ],
+      getValue:function(item){
+      return item.value;
+    },	
+    getTitle:function(item){
+      return item.title? `${item.value} &mdash; ${item.title}`: item.value;
+     },
   });
   $('#copy-button').click(function() {
     window.editor.codemirror.replaceSelection($('#autocomplete').val());

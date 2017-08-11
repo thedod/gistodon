@@ -1,7 +1,7 @@
 import os, sys, re, argparse, time, json, logging
 import requests
 from glob import glob
-from urllib2 import urlparse
+from urlparse import urlsplit
 from getpass import getpass
 from mastodon import Mastodon
 from markdown import markdown
@@ -100,11 +100,17 @@ def webserver(masto, instance, account):
         if not q:
             return jsonify([])
         res = masto.search(q, True)
-        return jsonify(
-            # This trick makes sure local accounts also get a @hostname suffix
-            ['@{}@{}'.format(a["username"], urlparse.urlsplit(a["url"]).netloc)
-                for a in res.get('accounts',[])]+ \
-            ['#'+a for a in res.get('hashtags',[])])
+        return jsonify(sorted(
+            [
+                {
+                    # This trick makes sure both local and external
+                    # accounts get a @hostname suffix.
+                    "value": "@{}@{}".format(
+                        a["username"], urlsplit(a["url"]).netloc),
+                    "title": a.get("display_name")
+                } for a in res.get('accounts',[])]+ \
+            [{"value": '#'+a} for a in res.get('hashtags',[])],
+            key=lambda s: s['value'].lower()))
 
     app.run(host='localhost', port=8008, debug=DEBUG)
 
