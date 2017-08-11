@@ -6,7 +6,8 @@ from getpass import getpass
 from mastodon import Mastodon
 from markdown import markdown
 from html_text import extract_text
-from flask import Flask, render_template, request, redirect, jsonify
+from flask import (Flask, render_template,
+    request, redirect, jsonify)
 
 DEBUG = False       # If it ain't broke, don't debug it.
 NO_TOOTING = False  # Handy during debug: create gist, but don't toot.
@@ -57,7 +58,8 @@ def make_gist(title, body):
         }
     ).json()['html_url']+"#file-toot-md"
 
-def post(masto, body, instance, title=None, direction='ltr'):
+def post(masto, body, instance, title=None,
+         direction='ltr', in_reply_to_id=None):
     summary = extract_text(markdown(body.strip()[:140]))
     hashtags = get_hashtags(body, ignore=summary)
     mentions = get_mentions(body, ignore=summary)
@@ -77,14 +79,17 @@ def post(masto, body, instance, title=None, direction='ltr'):
     status = u'{}... {}'.format(summary, gist)
     if hashtags or mentions:
         status += u'\n'+u' '.join(hashtags.union(mentions))
-    return masto.status_post(status, spoiler_text=title)['url']
+    return masto.status_post(
+        status, spoiler_text=title, in_reply_to_id=in_reply_to_id)['url']
 
 def webserver(masto, instance, account):
     app = Flask(__name__, static_url_path='')
  
     @app.route('/')
     def index():
-        return render_template('index.html', account=account)
+        re = request.args.get('re','')
+        return render_template('index.html', account=account,
+            re=re)
 
     @app.route('/toot', methods=['POST'])
     def tootit():
@@ -92,7 +97,17 @@ def webserver(masto, instance, account):
             return "Nothing to toot"
         return redirect(post(
             masto, request.form['markdown'], instance,
-            request.form['title'], request.form['direction']))
+            title=request.form['title'],
+            in_reply_to_id=request.form.get('re'),
+            direction=request.form['direction']))
+
+    @app.route('/re', methods=['GET', 'POST'])
+    def q():
+        q = request.form.get('q', request.args.get('q'))
+        if not q:
+            return jsonify(None)
+        res = masto.search(q, True).get('statuses',[])
+        return jsonify(res and res[0] or None)
 
     @app.route('/search', methods=['GET', 'POST'])
     def search():
@@ -171,7 +186,7 @@ def main():
             "Empty toot."
         body = '\n'.join(lines)
         assert not args.title or len(args.title)<=80, "Title exceeds 80 characters"
-        logging.info(post(masto, body, title))
+        logging.info("Posted {}.".format(post(masto, body, title)))
 
 
 if __name__=='__main__':

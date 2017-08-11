@@ -2,7 +2,7 @@
 <html lang="en-us">
 <head>
 <meta charset="UTF-8">
-<title>{{ account.display_name }} &mdash; Gistodon</title>
+<title>The dod &mdash; Gistodon</title>
 <link rel="icon" href="graphics/gistodon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css" href="css/normalize.css">
@@ -16,8 +16,20 @@
   .header { text-align: center }
   .header img { border-radius: 50%; max-height: 120px }
   .header a:hover { color: black; text-decoration: none }
-  .header input { width:50%; border: solid #ddd 1px; margin-bottom: 4px }
   .main-content input { font-size: 2em; width:100%; margin-bottom: 8px }
+  #autocomplete, #re-url { font-size: inherit; border: solid #888 1px }
+  .main-content .re { background: #ddd; padding: 4px; text-align: center }
+  .main-content .re input { font-size: inherit }
+  .main-content .re #re-wrapper {
+    text-align: start;
+    border: solid #ccc 1px;
+    border-radius: 8px;
+    padding: 8px;
+    min-height: 80px
+  }
+  .main-content .re #re-body { padding: 8px }
+  .main-content .re #re-author { float: left; margin: 4px }
+  .main-content .re #re-author img { border-radius: 50%; max-height: 60px }
 </style>
 </head>
 <body>
@@ -29,86 +41,39 @@
     </a>
     Gistodon: toot longer
     <small>(as
-      <a target="_blank" title="{{ account.display_name }}"
-         href="{{ account.url }}">{{ account.display_name }}</a>)
+      <a target="_blank" title="The dod"
+         href="https://social.weho.st/@thedod">The dod</a>)
     </small>
-    <a target="_blank" title="{{ account.display_name }}"
-       href="{{ account.url }}">
-      <img alt="{{ account.display_name }}" src="{{ account.avatar }}"/>
+    <a target="_blank" title="The dod"
+       href="https://social.weho.st/@thedod">
+      <img alt="The dod" src="https://social.weho.st/system/accounts/avatars/000/008/712/original/5b5cb641aea1876b.png?1493908583"/>
     </a>
   </h1>
-  <input id="autocomplete" placeholder="autocomplete mentions/hashtags">
-  <button id="copy-button">
-    <i class="fa fa-hand-o-down" aria-hidden="true"></i>
-  </button>
-
 </section>
+
 <section class="main-content">
-<form method="POST" action="toot" target="_blank">
-<input type="hidden" id="direction" name="direction" value="ltr"/>
-<input id="title" name="title" placeholder="Optional title/CW"/>
-<textarea id="markdown" name="markdown" placeholder="Write something..."></textarea>
-<input type="submit" value="Toot it"/>
-</form>
+  <div class="re">
+    <p><input id="re-url" placeholder="In reply to (paste a toot's URL)"></p>
+    <div id="re-wrapper">
+      <div id="re-author"></div>
+      <div id="re-body"></div>
+    </div>
+    <p><input id="autocomplete" placeholder="Autocomplete mentions/hashtags"></p>
+  </div>
+  <form method="POST" action="toot" target="_blank">
+    <input type="hidden" id="direction" name="direction" value="ltr"/>
+    <input type="hidden" id="re" name="re" value=""/>
+    <input id="title" name="title" placeholder="Optional content warning (CW)"/>
+    <textarea id="markdown" name="markdown" placeholder="Write something..."></textarea>
+    <input type="submit" value="Toot it"/>
+  </form>
+</section>
 <script src="js/simplemde.min.js"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/jquery.autocomplete.js"></script>
 <script>
-$(function() {
-  $('#direction').val('ltr'); // to avoid incosistency when reloading rtl
-  function toggleDirection() {
-    var dir = $('#direction').val()=='ltr'? 'rtl': 'ltr';
-    $('#direction').val(dir);
-    window.editor.codemirror.setOption("direction", dir);
-    $('.main-content').css("direction", dir);
-  }
-  window.editor = new SimpleMDE({
-    element: document.getElementById("markdown"),
-    spellChecker: false,
-    promptURLs: true,
-    toolbar: [
-        "bold",
-        "italic",
-        "heading",
-        "|",
-        "quote",
-        "unordered-list",
-        "ordered-list",
-        "|",
-        "link",
-        "image",
-        "|",
-        "preview",
-        "side-by-side",
-        "fullscreen",
-        "|",
-        {
-            "action": toggleDirection,
-            "className": "fa fa-exchange",
-            "default": true,
-            "name": "direction",
-            "title": "Switch direction (LTR/RTL)"
-        },
-        "|",
-        "guide",
-        "|"
-    ]
-  });
-  $("#autocomplete").val('').autocomplete({
-    source:[ { type: "remote", url: "search?q=%QUERY%" } ],
-      getValue:function(item){
-      return item.value;
-    },	
-    getTitle:function(item){
-      return item.title? `${item.value} &mdash; ${item.title}`: item.value;
-     },
-  });
-  $('#copy-button').click(function() {
-    window.editor.codemirror.replaceSelection($('#autocomplete').val());
-    $('#autocomplete').val('');
-    return true; // voodoo
-  }); 
-});
+  window.IN_REPLY_TO_URL = '{{re}}';
 </script>
+<script src="js/gistodon.js"></script>
 </body>
 </html>
