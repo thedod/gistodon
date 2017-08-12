@@ -60,7 +60,8 @@ def make_gist(title, body):
 
 def post(masto, body, instance, title=None,
          direction='ltr', in_reply_to_id=None):
-    summary = extract_text(markdown(body.strip()[:140]))
+    # Markdown more than we need, to [hopefully] discard chopped markup.
+    summary = extract_text(markdown(body.strip()[:200]))[:140]
     hashtags = get_hashtags(body, ignore=summary)
     mentions = get_mentions(body, ignore=summary)
     body = linkify_hashtags(linkify_mentions(body), instance)
@@ -103,15 +104,17 @@ def webserver(masto, instance, account):
 
     @app.route('/re', methods=['GET', 'POST'])
     def q():
-        q = request.form.get('q', request.args.get('q'))
-        if not q:
-            return jsonify(None)
+        q = request.form.get('q', request.args.get('q',''))
+        u = urlsplit(q)
+        if not (u.scheme=='https' and u.netloc and u.path):
+            return jsonify(None)  # Don't bother the instance
         res = masto.search(q, True).get('statuses',[])
         return jsonify(res and res[0] or None)
 
     @app.route('/search', methods=['GET', 'POST'])
     def search():
-        q = request.form.get('q', request.args.get('q'))
+        q = request.form.get(
+            'q', request.args.get('q','')).strip()
         if not q:
             return jsonify([])
         res = masto.search(q, True)

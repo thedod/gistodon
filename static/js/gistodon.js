@@ -8,8 +8,8 @@ $(function() {
   }
   function update_re() {
     var re = $('#re-url').val().trim();
+    $('#re-wrapper').hide();
     if (!re) {
-      $('#re-wrapper').hide();
       return;
     }
     $.ajax('/re', {data: {q: $('#re-url').val()}}).done(function(r) {
@@ -25,7 +25,7 @@ $(function() {
                               <a target="_blank"
                                  title="@${r.account.acct }"
                                  href="${r.account.url}">
-                                ${r.account.display_name}
+                                ${r.account.display_name||'@'+r.account.acct}
                                </a>:
                              </h5>
                              ${r.spoiler_text}
