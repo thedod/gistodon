@@ -23,12 +23,12 @@ TOOTIT
 
 This would create a gist like [this one](https://gist.github.com/anonymous/6815766cb31e382f8b44370ef004b842#file-toot-md), and a [toot](https://social.weho.st/@thedod/960590) about it, where:
 
+* Mentions and hashtags in the gist are linkified. 
 * The toot contains:
   * A plaintext excerpt from the gist.
   * A link to the gist.
-  * [If needed], all mentions that appear on the gist
+  * [If needed], all mentions and hashtags that appear in the gist
     (unless they're alredy in the excerpt).
-* The gist linkfies all mentions and hashtags. 
 
 Of course, `./gistodon.sh -t "Not for the meek" < /tmp/somepost.md` or `myscript | /path/to/gistodon.sh` are probably more practical ways of doing this, but the easiest way is via the `localhost` web interface.
 
