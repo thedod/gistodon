@@ -14,7 +14,7 @@ $(function() {
     }
     $.ajax('/re', {data: {q: $('#re-url').val()}}).done(function(r) {
       if (r) {
-        $('#re').val(r.id);
+        $('#re').val(r.url);
         $('#re-author').html(
         `<a target="_blank" title="${r.account.display_name }"
             href="${r.account.url}">

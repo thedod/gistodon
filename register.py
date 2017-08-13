@@ -29,8 +29,9 @@ def sign_in(instance, client_cred, user_cred):
 if __name__=='__main__':
     when = "already"
     parser = argparse.ArgumentParser(description='Authorize Gistodon app for a mastodon account.')
-    parser.add_argument('--app_name', '-a', default='Gistodon',
-                        help='Name for the app (default is Gistodon).')
+    parser.add_argument('-a', '--app_name', default='Gistodon',
+                        help=('Name for the app (default is Gistodon).'
+                              ' Appears below the toot, near the date.'))
     parser.add_argument('instance', help='Your mastodon instance (e.g. mastodon.social).')
     parser.add_argument('email',
                         help='The email address you login to that instance with.')
