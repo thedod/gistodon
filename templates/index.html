@@ -2,7 +2,7 @@
 <html lang="en-us">
 <head>
 <meta charset="UTF-8">
-<title>The dod &mdash; Gistodon</title>
+<title>{{ account.display_name }} &mdash; Gistodon</title>
 <link rel="icon" href="graphics/gistodon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css" href="css/normalize.css">
@@ -61,12 +61,12 @@
     </a>
     Gistodon: toot longer
     <small>(as
-      <a target="_blank" title="The dod"
-         href="https://social.weho.st/@thedod">The dod</a>)
+      <a target="_blank" title="{{ account.display_name }}"
+         href="{{ account.url }}">{{ account.display_name }}</a>)
     </small>
-    <a target="_blank" title="The dod"
-       href="https://social.weho.st/@thedod">
-      <img alt="The dod" src="https://social.weho.st/system/accounts/avatars/000/008/712/original/5b5cb641aea1876b.png?1493908583"/>
+    <a target="_blank" title="{{ account.display_name }}"
+       href="{{ account.url }}">
+      <img alt="{{ account.display_name }}" src="{{ account.avatar }}"/>
     </a>
   </h1>
 </section>
