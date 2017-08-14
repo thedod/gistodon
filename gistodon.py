@@ -69,7 +69,7 @@ def make_gist(title, body):
 def post(masto, body, instance, title=None,
          direction='ltr', in_reply_to=None):
     # Markdown more than we need, to [hopefully] discard chopped markup.
-    summary = extract_text(markdown(body.strip()[:200]))[:140]
+    summary = extract_text(markdown(body.strip()))[:140]
     hashtags = get_hashtags(body, ignore=summary)
     mentions = get_mentions(body, ignore=summary)
     irt_id = in_reply_to and in_reply_to.get('id') or None
