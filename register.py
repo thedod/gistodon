@@ -59,5 +59,5 @@ if __name__=='__main__':
             args.email, passwd, user_cred_filename)
         print "created {}.".format(user_cred_filename)
         when = "now"
-    print "You're {} registed as {}".format(
+    print "You're {} registered as {}".format(
         when, masto.account_verify_credentials()['url'])
