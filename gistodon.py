@@ -113,9 +113,7 @@ def webserver(masto, instance, account):
             return "Nothing to toot"
         in_reply_to=request.form.get('re')
         if in_reply_to:
-            print in_reply_to
             in_reply_to = url2toot(masto, in_reply_to)
-            print in_reply_to
             if not in_reply_to:
                 abort(500, 'The "in reply to" url is not a toot.')
         return redirect(post(
